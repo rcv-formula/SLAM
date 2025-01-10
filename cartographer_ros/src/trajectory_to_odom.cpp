@@ -61,15 +61,16 @@ private:
         double orientation_z = msg->pose.orientation.z;
         double orientation_w = msg->pose.orientation.w;
 
+        // muted for beauitfy
         // Calculate heading from orientation quaternion
-        double heading = atan2(2.0 * (orientation_w * orientation_z), 1.0 - 2.0 * (orientation_z * orientation_z));
+        //double heading = atan2(2.0 * (orientation_w * orientation_z), 1.0 - 2.0 * (orientation_z * orientation_z));
 
         // Log the current data from /tracked_pose
-        RCLCPP_INFO(this->get_logger(), "TrackedPose -> Raw Position: (%.2f, %.2f), Orientation (Z: %.2f, W: %.2f)",
-                    position_x, position_y, orientation_z, orientation_w);
+        //RCLCPP_INFO(this->get_logger(), "TrackedPose -> Raw Position: (%.2f, %.2f), Orientation (Z: %.2f, W: %.2f)",
+        //            position_x, position_y, orientation_z, orientation_w);
 
         // Log the computed heading
-        RCLCPP_INFO(this->get_logger(), "Computed Heading: %.2f radians", heading);
+        //RCLCPP_INFO(this->get_logger(), "Computed Heading: %.2f radians", heading);
 
         // Create Odometry message
         nav_msgs::msg::Odometry odom_msg;
@@ -90,8 +91,8 @@ private:
         last_odom_msg_ = std::make_shared<nav_msgs::msg::Odometry>(odom_msg);
         publisher_->publish(odom_msg);
 
-        RCLCPP_INFO(this->get_logger(), "Published /odom: Position (%.2f, %.2f), Heading %.2f radians",
-                    position_x, position_y, heading);
+        //RCLCPP_INFO(this->get_logger(), "Published /odom: Position (%.2f, %.2f), Heading %.2f radians",
+        //            position_x, position_y, heading);
     }
 
     void publish_last_odom()
