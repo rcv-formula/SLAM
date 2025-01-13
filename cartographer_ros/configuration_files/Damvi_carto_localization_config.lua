@@ -50,7 +50,6 @@ TRAJECTORY_BUILDER_2D.submaps.grid_options_2d.resolution = 0.05
 -- Pure Localization 모드 관련 변수
 -- ◆ Pure Localization 모드 활성화 (기존 맵을 활용하여 로컬라이제이션만 수행). 0에 가까울수록 높은 정렬 정확도. 0초이후에 constraint serach 수행
   -- 값을 키우면 스캔이 쌓인 뒤에 매칭을 수행하기때문에, 초기에 틀어짐은 있을수는 있어도 맵이 올바르게 맞춰짐.  
-    -- 후보 1
   POSE_GRAPH.global_constraint_search_after_n_seconds = 0
 
 
@@ -62,28 +61,22 @@ TRAJECTORY_BUILDER.pure_localization_trimmer = {
 
 -- ◆ 전역 매칭 시 필요한 최소 점수,
   -- 전역 매칭을 통해 새로운 constraint를 추가할 때, 매칭 점수가 이 값 이상이어야만 인정
-    -- 후보 2
-POSE_GRAPH.constraint_builder.global_localization_min_score = 0.85
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.75
 -- ◆ 로컬 매칭에서 필요한 최소 점수
   -- Pure Localization 모드에서, local 스캔을 매칭하여 위치 보정을 할 때 이 점수를 만족해야 매칭이 유효
-    -- 후보 3
   POSE_GRAPH.constraint_builder.min_score = 0.75 --0.65
 
 -- ◆ 누적 레이저 스캔 데이터를 Submap에 추가하는 단위
   -- 한 번의 스캔 매칭을 수행하기 위해 몇 개의 스캔(레인지데이터)을 누적할지 결정
-    -- 후보 4 
   TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1
 
 -- ◆ 전역 서브맵 매칭을 위한 탐색 창
   -- 전역 매칭(또는 큰 오프셋이 있을 때) 시, “평면상에서 몇 m 범위까지 후보를 탐색할 것인가”를 정함
-    -- 후보 5
-POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 10.0 --1
+POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 20.0 --1
   -- 전역 매칭 시, 회전(각도)에 대해 몇 도(deg) 범위까지 탐색할지 정함
-    -- 후보 6
-POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(40.0) -- 20
+POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(50.0) -- 20
 
 -- Pure Localization 관련 변수가 아닌 일반 변수 정렬
-
 -- LiDAR 설정
 TRAJECTORY_BUILDER_2D.min_range = 0.1
 TRAJECTORY_BUILDER_2D.max_range = 20.0
@@ -93,10 +86,10 @@ TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.min_num_points = 200
 TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.05
 
 -- Scan Matcher 설정
-TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 2.0 --0.1
+TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 10.0 --0.1
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.angular_search_window = math.rad(30.0) --20.0
-TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 5.0 --10.0
-TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 0.5 --1.0
+TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 15.0 --10.0
+TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 1.5 --1.0
 
 -- IMU 설정. 급격한 steering이 발생할 경우에는 timeconstant와 rotation weight을 키우면 됨. 
 TRAJECTORY_BUILDER_2D.imu_gravity_time_constant = 80.0
@@ -112,11 +105,13 @@ POSE_GRAPH.optimize_every_n_nodes = 3 --10
 POSE_GRAPH.constraint_builder.max_constraint_distance = 15.0
 
 -- Loop Closure 설정
-POSE_GRAPH.constraint_builder.loop_closure_translation_weight = 15.0 --1.0
+  -- Loop Closure(또는 전역 constraint)에서 “새로운 서브맵 매칭이 기존 맵과 부딪혔을 때, 그 매칭을 얼마나 강하게(가중치 높게) 반영할지” 결정
+POSE_GRAPH.constraint_builder.loop_closure_translation_weight = 30.0 --1.0 
 POSE_GRAPH.constraint_builder.loop_closure_rotation_weight = 10.0 --1.0
 
 -- 전역 샘플링 설정
 POSE_GRAPH.constraint_builder.sampling_ratio = 0.4
-POSE_GRAPH.global_sampling_ratio = 0.005
+  -- global_sampling_ratio는 전역 매칭(큰 오프셋) 후보를 얼마나 자주 탐색할지 결정. 0.005(=0.5%)면 200장 중 1장 꼴로 전역 매칭 시도
+POSE_GRAPH.global_sampling_ratio = 0.01
 
 return options
