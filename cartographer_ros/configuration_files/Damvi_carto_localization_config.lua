@@ -48,8 +48,11 @@ TRAJECTORY_BUILDER_2D.use_imu_data = true
 TRAJECTORY_BUILDER_2D.submaps.grid_options_2d.resolution = 0.05 
 
 -- Pure Localization 모드 관련 변수
--- ◆ Pure Localization 모드 활성화 (기존 맵을 활용하여 로컬라이제이션만 수행). 0에 가까울수록 높은 정렬 정확도
-POSE_GRAPH.global_constraint_search_after_n_seconds = 0
+-- ◆ Pure Localization 모드 활성화 (기존 맵을 활용하여 로컬라이제이션만 수행). 0에 가까울수록 높은 정렬 정확도. 0초이후에 constraint serach 수행
+  -- 값을 키우면 스캔이 쌓인 뒤에 매칭을 수행하기때문에, 초기에 틀어짐은 있을수는 있어도 맵이 올바르게 맞춰짐.  
+    -- 후보 1
+  POSE_GRAPH.global_constraint_search_after_n_seconds = 0
+
 
 -- ◆ Pure Localization 트리머 설정
 --    로컬라이제이션 수행 시, 유지할 서브맵의 최대 개수를 제한
@@ -57,16 +60,26 @@ TRAJECTORY_BUILDER.pure_localization_trimmer = {
   max_submaps_to_keep = 20,
 }
 
--- ◆ 전역 매칭 시 필요한 최소 점수, 
-POSE_GRAPH.constraint_builder.global_localization_min_score = 0.7
+-- ◆ 전역 매칭 시 필요한 최소 점수,
+  -- 전역 매칭을 통해 새로운 constraint를 추가할 때, 매칭 점수가 이 값 이상이어야만 인정
+    -- 후보 2
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.85
 -- ◆ 로컬 매칭에서 필요한 최소 점수
-POSE_GRAPH.constraint_builder.min_score = 0.6 --0.65
+  -- Pure Localization 모드에서, local 스캔을 매칭하여 위치 보정을 할 때 이 점수를 만족해야 매칭이 유효
+    -- 후보 3
+  POSE_GRAPH.constraint_builder.min_score = 0.75 --0.65
 
 -- ◆ 누적 레이저 스캔 데이터를 Submap에 추가하는 단위
-TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1
+  -- 한 번의 스캔 매칭을 수행하기 위해 몇 개의 스캔(레인지데이터)을 누적할지 결정
+    -- 후보 4 
+  TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1
 
 -- ◆ 전역 서브맵 매칭을 위한 탐색 창
-POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 20.0 --1
+  -- 전역 매칭(또는 큰 오프셋이 있을 때) 시, “평면상에서 몇 m 범위까지 후보를 탐색할 것인가”를 정함
+    -- 후보 5
+POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 10.0 --1
+  -- 전역 매칭 시, 회전(각도)에 대해 몇 도(deg) 범위까지 탐색할지 정함
+    -- 후보 6
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(40.0) -- 20
 
 -- Pure Localization 관련 변수가 아닌 일반 변수 정렬
