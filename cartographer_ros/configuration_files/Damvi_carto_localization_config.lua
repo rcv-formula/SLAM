@@ -39,9 +39,9 @@ TRAJECTORY_BUILDER_2D.use_imu_data = true
 TRAJECTORY_BUILDER_2D.submaps.grid_options_2d.resolution = 0.05 
 
 -- Pure Localization 모드 관련 설정
-  -- ◆ 전역 매칭(루프 클로저) 최소 점수
-POSE_GRAPH.constraint_builder.global_localization_min_score = 0.50
-  -- ◆ 로컬 매칭(일반 스캔 매칭) 최소 점수
+  -- ◆ [강력한 효과]전역 매칭(루프 클로저) 최소 점수
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.70
+  -- ◆ [강력한 효과]로컬 매칭(일반 스캔 매칭) 최소 점수
 POSE_GRAPH.constraint_builder.min_score = 0.85
 
 POSE_GRAPH.global_constraint_search_after_n_seconds = 0
@@ -52,19 +52,20 @@ TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1
 
 -- ◆ [GLOBAL]
 -- 초기 위치에 대한 설정. 아래 두 값은 초기 위치가 크게 벗어날 가능성이 높으면 큰 값을 지정
-  -- global Fast Correlative 매칭에서 x-y 평면상 탐색 범위 (m), 고정. 작을수록 좋음
+  -- [강력한 효과]global Fast Correlative 매칭에서 x-y 평면상 탐색 범위 (m), 고정. 작을수록 좋음
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 0.01
-  -- global Fast Correlative 매칭에서 회전(각도) 탐색 범위 (라디안), 고정. 작을수록 좋음
+  -- [강력한 효과]global Fast Correlative 매칭에서 회전(각도) 탐색 범위 (라디안), 고정. 작을수록 좋음
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(1.5)
-  -- [강력] global 전역 매칭(큰 오프셋 수정 등) 시 스캔을 추출하여 매칭 시도할 확률 (0 ~ 1). 연산량 tradeoff가 존재. 0.0036-0.004 사이. 0.0001 단위로 조절
+  -- [매우 강력한 효과] global 전역 매칭(큰 오프셋 수정 등) 시 스캔을 추출하여 매칭 시도할 확률 (0 ~ 1). 연산량 tradeoff가 존재. 0.0036-0.004 사이. 0.0001 단위로 조절
 POSE_GRAPH.global_sampling_ratio = 0.00495 -- 정반대 일 떄
 
 -- ◆ [LOCAL]
--- real time 변수 설정
+-- [강력한 효과]real time 변수 설정
   -- 실시간 Local Correlative 매칭에서 x-y 평면상 탐색 범위 (m)
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.01
--- 실시간 Local Correlative 매칭에서 회전(각도) 탐색 범위 (라디안), 얼마나 허용할 지
+-- [강력한 효과]실시간 Local Correlative 매칭에서 회전(각도) 탐색 범위 (라디안), 얼마나 허용할 지
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.angular_search_window = math.rad(1.5)
+
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 200.0
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 200.0
 
@@ -88,7 +89,7 @@ TRAJECTORY_BUILDER_2D.imu_gravity_time_constant = 30.0
 MAP_BUILDER.num_background_threads = 4
 
 -- ◆ 기타 posegraph 관련
-  --n개의 노드(스캔)이 쌓일 때마다 전역 최적화(Loop Closure 등) 실행. 적을수록 빠르게 최적화가 일어남. 1개가 적절
+  --[강력한 효과]n개의 노드(스캔)이 쌓일 때마다 전역 최적화(Loop Closure 등) 실행. 적을수록 빠르게 최적화가 일어남. 1개가 적절
 POSE_GRAPH.optimize_every_n_nodes = 1
 
 -- 전역 매칭을 위한 Submap 간 최대 거리
