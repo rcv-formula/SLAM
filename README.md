@@ -18,15 +18,19 @@
 #### .pgm/.yaml 파일 저장
 - Mapping을 할 떄에는 `f1tenth bringup`과 `imu stella`를 실행한 상태에서 주행해야 한다. 
   이 때, `Damvi_carto_launch.py`를 실행하여 맵을 생성한다. 이후 맵을 저장할 때에는 `nav2` 패키지의 `map saver`를 사용하여 저장한다. ROS2 기준 map saver 호출 명령어는 아래와 같으며, apt get install로 설치한 nav2 패키지가 있음을 가정한다.  
+
 ```bash
-   ros2 run nav2_map_server map_saver_cli -f <*MAP_NAME*>
+   ros2 run nav2_map_server map_saver_cli -f <MAP_NAME>
 ```
+
 #### .pbstream, 파일 저장
 **주의사항**
-** 반드시 ros cartographer2의 `Damvi_carto_launch.py`를 실행하고, ***종료하지 않은 상태로 아래의 명령어를 입력한다. 반드시 pbstream이 저장되었는지 경로에 확인한다*** 
+- 반드시 ros cartographer2의 `Damvi_carto_launch.py`를 실행하고, ***종료하지 않은 상태로 아래의 명령어를 입력한다. 반드시 pbstream이 저장되었는지 경로에 확인한다*** 
+
 ```bash
    ros2 service call /write_state cartographer_ros_msgs/srv/WriteState "{filename: '<*저장경로/PBSTREAM_NAME*>'}"
 ```
+
 - **.pbstream 저장 시 권고 사항:**
 -- 가능한 많은 loop를 돌 것을 권장한다. 
 -- 주행할 때 S자 주행을 하면서 여러 각도에 대한 2D scan 데이터를 취득할 경우, pure_localization 모드의 성능이 대폭 향상되니, 가능한 구불구불한 주행 및 직진 주행을 최대한 섞어가는 것을 권장한다.  
@@ -35,16 +39,21 @@
 - 실시간 `/scan` 및 `/imu/data` 토픽을 사용할 수 있고, 또는 ROS bag 파일에서 데이터를 처리할 수도 있다. 이에 대한 코드는 서로 다르니 아래 내용을 참조하면 된다.
 - cartographer는 pose graph 기반으로 동작하기 때문에, initial pose를 잡는 것이 굉장히 중요하다. 시험한 결과, pbstream 파일이 "괜찮은" 상태라고 가정해도 처음 3초 이내의 주행에 대한 데이터가 수집되어야 localization에 필요한 node 데이터를 취득할 수 있기 때문에 어느 정도의 주행이 필요하다. **이러한 주행을 줄이고 싶으면 pbstream을 최대한 다양한 각도로 얻으면 된다.**
 - 이외에도 `.lua` 파일에서 몇몇의 파라미터 튜닝이 필요하다. **주석으로 설명한 부분에 대한 변수를 수정하면 되며, 그 외의 변수들은 바꾸어도 크게 의미가 없거나 이미 최적화된 변수이기 때문에 수정하지 않는 것을 권장한다.**
+
 #### rosbag에 대한 명령어
 - 이때 rosbag 및 pbstream파일에 대한 경로를 아래의 launch.py 파일을 열어 수정한 후, 아래의 명령어를 실행한다. 
+
 ```bash
    ros2 launch cartographer_ros Damvi_rosbag_pure_launch.py
 ```
+
 #### 실제 주행에 대한 명령어
 - 앞선 rosbag와 같이, pbstream에 대한 경로를 적절히 변경해준 뒤, 명령어를 실행한다.
+
 ```bash
    ros2 launch cartographer_ros Damvi_carto_pure_launch.py
 ```
+
 ##### use_sim_time 관련
 
 - TODO
