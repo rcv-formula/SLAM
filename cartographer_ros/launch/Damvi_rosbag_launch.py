@@ -1,5 +1,4 @@
 import os
-
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.substitutions import LaunchConfiguration
@@ -52,7 +51,7 @@ def generate_launch_description():
         # ROS bag 파일 설정
         DeclareLaunchArgument(
             'bagfiles',
-            default_value='/rosbag/3F_slow/3F_slow_0.db3',
+            default_value='/rosbag/4f_1/4f_1_0.db3', # rosbag 파일이 있는 위치로 경로 수정
             description='Path to the rosbag file'
         ),
 

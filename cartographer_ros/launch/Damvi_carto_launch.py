@@ -6,8 +6,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     package_dir = get_package_share_directory('cartographer_ros')
-    config_dir = os.path.join(package_dir, 'configuration_files')  # 경로 수정
-
+    config_dir = os.path.join(package_dir, 'configuration_files')
     return LaunchDescription([
         Node(
             package='cartographer_ros',
@@ -19,7 +18,7 @@ def generate_launch_description():
                 '-configuration_basename', 'Damvi_carto_config.lua'],
             remappings=[
                 ('scan', 'scan'),
-                ('imu', 'imu/data'),  # 데이터 스트림 이름 일치 확인 필요
+                ('imu', 'imu/data'),
                 ('tf', 'tf'),
                 ('tf_static', 'tf_static'),
             ],
@@ -44,4 +43,3 @@ def generate_launch_description():
             output='screen',
         )
     ])
-
