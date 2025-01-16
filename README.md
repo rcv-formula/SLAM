@@ -82,51 +82,51 @@
 우선 이 파라미터가 절대적인 정답은 아니고, 어쩌면 몇몇 파라미터를 극단적으로 키우거나 줄였을 때 성능이 잘 나올 수도 있다. 신비한 파라미터의 세계..!
  
 1. [매우 강력] loop closure
-   - `POSE_GRAPH.constraint_builder.translation_weight = 50000.0` 
-   - `POSE_GRAPH.constraint_builder.rotation_weight = 50000.0`
+- `POSE_GRAPH.constraint_builder.translation_weight = 50000.0` 
+- `POSE_GRAPH.constraint_builder.rotation_weight = 50000.0`
    - loop closure로 기존 맵 대비 현재 따여진 맵을 얼마나 강하게 정합시킬건지 결정하는 파라미터. 이 값을 작을 경우에는 loop closure가 일어나지 않아서 루프를 돌 때마다 기존 맵에 맞추려는 것이 아니라, **그 값이 작을 수록 새로운 맵을 그리려고 하는 경향이 강해진다**. 따라서 가능하면 크게 설정하면 되나, 50000.0보다 키울 경우 어느정도 수렴하여 더이상의 증가는 드라마틱한 효과를 낳지 못한다.
    - translation, rotation은 단어 뜻 그대로의 변수를 의미한다.  
 
 2. [매우강력] loop closure 최적화
-   - `POSE_GRAPH.optimize_every_n_nodes = 1`
+- `POSE_GRAPH.optimize_every_n_nodes = 1`
    - cartographer는 노드를 토대로 localization을 수행한다. 따라서 node개 몇개가 쌓인 후에 loop closure를 수행할 지 결정한다. 하지만 pure_localization 모드의 경우, pbstream 파일 안에 수 많은 노드가 이미 존재한다고 가정한다. 우리는 최대한 빨리 초기 위치를 잡아내는 것이 목적이기 때문에, 단 하나의 노드만 잡히더라도 바로 loop closure를 수행하도록 하였다. 값을 키우면 초기위치를 찾는데 오래 걸린다. 0으로 하면 아예 노드를 찾지 않는다. **따라서 1이 최적의 값이기에 가능하면 수정하지 않는 것을 권장한다.**
-   - `POSE_GRAPH.constraint_builder.sampling_ratio = 0.0001`
+- `POSE_GRAPH.constraint_builder.sampling_ratio = 0.0001`
    - 이 값은 loop closure를 수행할 시, lua 파일에 있는 constraint 값들을 얼마나 반영할 지를 결정한다. 실험을 통해 얻은 결과로는, 저 값이 작을 수록 initial pose를 잘 찾는 경향이 있었지만, 0.0001에서 가장 좋은 성능을 발휘하였다. 앞선 변수와 마찬가지로 고정하는 것을 권장한다.
 
 3. [매우 강력] global_sampling_ratio
-   - `POSE_GRAPH.global_sampling_ratio = 0.00498`
+- `POSE_GRAPH.global_sampling_ratio = 0.00498`
    - **반드시 0.0001이나 그 이하 수준으로 값을 조절**. 값이 클수록 높은 pure_localization 정확도를 보임.
    - Cartographer에서 글로벌 위치 재설정(Global Localization) 또는 루프 클로저(Loop Closure) 검출을 수행할 때 사용되는 최소 매칭 점수를 설정하는 파라미터. 이 값은 글로벌 매칭 시 스캔과 서브맵 간의 정합 정확도를 결정하는 기준점수. **연산량을 매우 극단적으로 잡아먹기에 조금씩 키워야만 한다**
 
 4. [매우 강력] min_score
-   - `POSE_GRAPH.constraint_builder.min_score = 0.75`
+- `POSE_GRAPH.constraint_builder.min_score = 0.75`
    - fast_correlative_scan_matcher 수행 시, 매칭에 필요한 최소 점수. 
 
 5. IMU 관련
-   - `TRAJECTORY_BUILDER_2D.imu_gravity_time_constant = 30.0`
+- `TRAJECTORY_BUILDER_2D.imu_gravity_time_constant = 30.0`
    - 설정한 변수 시간동안(30초)동안의 데이터를 기준으로 중력 벡터가 계산된다. 값을 키우면 급격한 드리프트에 대해서는 정확한 pose를 잡을 수 있다. 낮추게 되면 imu의 노이즈가 민감해진다. **급격한 주행시에는 이 값을 키우면 된다. 하지만 이 정도도 적절해보인다.**
 
 6. Ceres 기반 Scan Matcher
-   - ceres scanmatcher란 구글의 ceres c++ 라이브러리를 기반으로 비선형 최적화를 푸는 ceres solver를 사용하여서 lidar 데이터에 대한 scan matching을 수행하는 툴이다. 
-   - `TRAJECTORY_BUILDER_2D.ceres_scan_matcher.occupied_space_weight = 400.0`
+ceres scanmatcher란 구글의 ceres c++ 라이브러리를 기반으로 비선형 최적화를 푸는 ceres solver를 사용하여서 lidar 데이터에 대한 scan matching을 수행하는 툴이다. 
+- `TRAJECTORY_BUILDER_2D.ceres_scan_matcher.occupied_space_weight = 400.0`
    - pbstream내의 occupancy map(.pgm)에 존재하는 장애물의 배치에 대해서, 현재 장애물들의 위치와 비교해서 더 강하게 붙으려는 정도. 값은 키웠지만 최적값이라고는 보장하지 못하며, 드라미틱하게 키웠을 떄에도 효과가 미미하였음. 따라서 보통의 영향을 주는 것으로 판단함.
      
-   - `TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 200.0`
-   - `TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight = 200.0`
+- `TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 200.0`
+- `TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight = 200.0`
    - ceres_scan_matcher는 LiDAR데이터 기반의 이전의 서브맵들과의 비교를 해서, 현재의 LiDAR데이터값과 이전 서브맵들의 데이터에 대해서 어느범위까지 이동/회전을 진행시켜서 비교할지 정하는 weight값. 즉 ceres_scan_matcher로 구한 scan_matching값을 얼마나 강하게 적용할 지 결정한다.
 
 8. [강력] fast_correlative_scan_matcher
-   - scan matching을 빠르게(fast)하는 알고리즘이며, 현재 라이더를 기존 맵(pbstream, 서브 맵)과 빠르게 정렬하여 pose 또는 **loop closure**를 검출하는데 사용됨. global/local에서 모두 사용됨. 낮은 해상도에서 높은 해상도로 차례대로 올려가며 세부적으로 scan matching을 수행하며 계산 속도를 줄이고 최적의 매칭을 빠르게 찾음. 탐색 범위는 아래 두 변수로 제한함. 
-   - `POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 0.01` 
-   - `POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(1.5)`
+- scan matching을 빠르게(fast)하는 알고리즘이며, 현재 라이더를 기존 맵(pbstream, 서브 맵)과 빠르게 정렬하여 pose 또는 **loop closure**를 검출하는데 사용됨. global/local에서 모두 사용됨. 낮은 해상도에서 높은 해상도로 차례대로 올려가며 세부적으로 scan matching을 수행하며 계산 속도를 줄이고 최적의 매칭을 빠르게 찾음. 탐색 범위는 아래 두 변수로 제한함. 
+- `POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 0.01` 
+- `POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(1.5)`
    - 두 변수에 대한 단위는 meter, radian이다. 각각 선형/회전 변환의 탐지 범위에 대해서 결정함. 4의 min_score도 이에 매칭되기 위해 필요한 최저 점수를 의미함. 
 
 9. [강력] real_time_correlative_scan_matcher
-   - 로봇의 현재 위치를 추정할 때 쓰이는 파라미터 그룹. local-SLAM에서 로봇의 현재 위치 추정을 최적화하기 위해 아래의 파라미터가 쓰임. 즉 pure_localization 모드에서, 주요한 역할을 하는 파라미터임. Real_time correlative_scan_matching은 현재 lidar 스캔 데이터를 기존의 local submap(pbstream 등)과 비교하여 여러 변환(translation/rotation)을 평가하여 가장 높은 상관성을 가진 변환을 선택함. 
-   - `TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.01`
+- 로봇의 현재 위치를 추정할 때 쓰이는 파라미터 그룹. local-SLAM에서 로봇의 현재 위치 추정을 최적화하기 위해 아래의 파라미터가 쓰임. 즉 pure_localization 모드에서, 주요한 역할을 하는 파라미터임. Real_time correlative_scan_matching은 현재 lidar 스캔 데이터를 기존의 local submap(pbstream 등)과 비교하여 여러 변환(translation/rotation)을 평가하여 가장 높은 상관성을 가진 변환을 선택함. 
+- `TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.01`
    - **선형변환(x, y. 단위: meter). 작을 수록 더 높은 정확도를 보임**. 비교하는 영역이 적기 때문에, 좋은 pbstream이 있다면 조금만 비교해도 **빠르게**기존 맵에 대해서 어디있는지 찾을 수 있음. 즉 모든 후보군들이 정확하다면(pbstream이 정확하다면) 아주 작은 스캔 데이터로만 비교해도 기존 맵에서 어디있는지 알 수 있음. 예를 들어서, 내가 5호관 모든 장소와 사물들을 정확하게 기억한다면, 어느 한 강의실의 책상 다리만 보고도 내가 지금 몇호실에 있는지 파악할 수 있음. 
-   - `TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.angular_search_window = math.rad(1.5)`
-     **회전변환(yaw. 단위: radian). 작을 수록 더 높은 정확도를 보임** 앞선 설명과 동일함.
+- `TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.angular_search_window = math.rad(1.5)`
+   - **회전변환(yaw. 단위: radian). 작을 수록 더 높은 정확도를 보임** 앞선 설명과 동일함.
    
    - 아래는 각각 각 변환에 대한 가중치임. 크게 늘려도 미미한 효과를 보였음. 오히려 앞선 두 변수의 값을 줄이는 것이 더 극단적인 효과가 있었음. 
    - `TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 200.0`
@@ -140,27 +140,27 @@
       | **용도**          | 전역 위치 추정, 루프 클로저            | 로컬 위치 추적                        |
 
 11. 기타(아래 변수들은 초기 위치를 잡는데 별 영향을 주지 않음)
-   - `POSE_GRAPH.constraint_builder.max_constraint_distance = 15.0`
+- `POSE_GRAPH.constraint_builder.max_constraint_distance = 15.0`
    - 서브 맵 간의 최대 간격. 단위는 meter. 
-   - `MAP_BUILDER.num_background_threads = 4`
+- `MAP_BUILDER.num_background_threads = 4`
    - 백그라운드에서 실행한 작업의 수. 즉 쓰레드의 수. DAMVI가 최대 8thread까지 가능하나, 안정적인 성능을 위해 4를 선정함. 
-   - `TRAJECTORY_BUILDER_2D.min_range = 0.1`
+- `TRAJECTORY_BUILDER_2D.min_range = 0.1`
    - 라이다 최소 탐지 범위
-   - `TRAJECTORY_BUILDER_2D.max_range = 20.0`
+- `TRAJECTORY_BUILDER_2D.max_range = 20.0`
    - 라이다 최대 담지 범위
-   - `TRAJECTORY_BUILDER_2D.missing_data_ray_length = 5.0`
+- `TRAJECTORY_BUILDER_2D.missing_data_ray_length = 5.0`
    - 라이다 데이터가 탐지하지 못한 거리에 대해서, 그 거리를 임의로 몇으로 설정할지를 결정
-   - `TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_length = 5.0`
+- `TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.max_length = 5.0`
    - adaptive_voxel_filter(동적으로 lidar입력데이터를 분석하고, 필요에 따라 포인터를 동적 filtering을 수행. DAMVI는 2D lidar이기에 grid cell이긴 하지만 cartographer는 3D lidar까지 지원)가 유지하려는 포인트 간 최대 거리를 설정. 두 점 간의 거리가 max_length보다 크면 해당 점은 필터링 대상에서 제외됨. 이 값이 클수록 pointcloud의 밀도가 낮아지고(부정확함) 계산속도가 빨라짐. 
-   - `TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.min_num_points = 200`
+- `TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.min_num_points = 200`
    - adaptive_voxel_filter가 filtering후에 최소한으로 유지해야하는 포인트의 개수. filter가 너무 많은 데이터를 제거하지 않도록 보장하는 파라미터. 
-   - `TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.05`
+- `TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.05`
    - voxel_filter가 더 많은 데이터 포인트를 유지하도록 하여 맵에 대한 세밀한 표현이 가능함.
-   - `TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1`
+- `TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1`
    - 스캔 데이터를 얼마나 누적할지를 결정. pure_localization에서는 빠른 처리가 필요하기 때문에 최소 누적으로 설정.
-   - `TRAJECTORY_BUILDER.pure_localization_trimmer = { max_submaps_to_keep = 5,}`
+- `TRAJECTORY_BUILDER.pure_localization_trimmer = { max_submaps_to_keep = 5,}`
    - 유지할 서브맵의 수. 너무 많으면 두 번째 주행때도 map을 따려는 성향이 강하기에 5정도가 적당. 너무 작으면 제대로 된 localization이 안됨. 
-   - `TRAJECTORY_BUILDER_2D.submaps.grid_options_2d.resolution = 0.05`
+- `TRAJECTORY_BUILDER_2D.submaps.grid_options_2d.resolution = 0.05`
    - 해상도. 한 cell은 5cm임.
 
 이외에도 options를 비롯한 여러 파라미터가 존재한다. 문의사항은 제 메일로 보내주시길바랍니다. 
