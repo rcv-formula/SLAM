@@ -7,7 +7,10 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     # 설정 변수 정의
-    config_dir = "/carto_ws/src/cartographer_ros/cartographer_ros/configuration_files"
+    script_path = os.path.abspath(__file__)
+    main_dir = os.path.dirname(script_path)
+    main_dir = os.path.dirname(main_dir)
+    config_dir = os.path.join(main_dir, 'configuration_files')
     rosbag_file = LaunchConfiguration('bagfiles')
     use_sim_time = LaunchConfiguration('use_sim_time')
 
@@ -51,7 +54,7 @@ def generate_launch_description():
         # ROS bag 파일 설정
         DeclareLaunchArgument(
             'bagfiles',
-            default_value='/rosbag/4f_1/4f_1_0.db3', # rosbag 파일이 있는 위치로 경로 수정
+            default_value='/home/shin/Desktop/4f_4/4f_4_0.db3', # rosbag 파일이 있는 위치로 경로 수정
             description='Path to the rosbag file'
         ),
 

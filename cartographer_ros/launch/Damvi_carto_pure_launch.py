@@ -6,7 +6,9 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 def generate_launch_description():
-    package_dir = get_package_share_directory('cartographer_ros')
+    script_path = os.path.abspath(__file__)
+    main_dir = os.path.dirname(script_path)
+    package_dir = os.path.dirname(main_dir)
     config_dir = os.path.join(package_dir, 'configuration_files')
     pbstream_file = os.path.join(package_dir, 'pbstream', '/rosbag/4f_map.pbstream')   # .pbstream 파일이 있는 위치로 경로 수정
     use_sim_time = LaunchConfiguration('use_sim_time')
