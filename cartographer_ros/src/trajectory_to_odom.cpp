@@ -44,17 +44,15 @@ private:
         {
             // Get the transform from map to odom
             geometry_msgs::msg::TransformStamped map_to_odom = tf_buffer_.lookupTransform(
-                "odom", "map", tf2::TimePointZero);
+                "map", "base_link", tf2::TimePointZero);
 
             // Transform the tracked pose from map to odom frame
-            geometry_msgs::msg::PoseStamped transformed_pose;
-            tf2::doTransform(*msg, transformed_pose, map_to_odom);
+            double position_x = map_to_odom.transform.translation.x;
+            double position_y = map_to_odom.transform.translation.y;
+            double orientation_z = map_to_odom.transform.rotation.z;
+            double orientation_w = map_to_odom.transform.rotation.w;
+            
 
-            // Extract position and orientation from transformed pose
-            double position_x = transformed_pose.pose.position.x;
-            double position_y = transformed_pose.pose.position.y;
-            double orientation_z = transformed_pose.pose.orientation.z;
-            double orientation_w = transformed_pose.pose.orientation.w;
 
             // Create Odometry message
             nav_msgs::msg::Odometry odom_msg;
@@ -65,7 +63,7 @@ private:
             current_time.nanosec = this->get_clock()->now().nanoseconds() % 1000000000;
             odom_msg.header.stamp = use_sim_time_ ? current_time : msg->header.stamp;
 
-            odom_msg.header.frame_id = "odom";
+            odom_msg.header.frame_id = "map";
             odom_msg.child_frame_id = "base_link";
 
             odom_msg.pose.pose.position.x = position_x;
