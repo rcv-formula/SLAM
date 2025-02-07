@@ -52,8 +52,6 @@ private:
             double orientation_z = map_to_odom.transform.rotation.z;
             double orientation_w = map_to_odom.transform.rotation.w;
             
-
-
             // Create Odometry message
             nav_msgs::msg::Odometry odom_msg;
 
@@ -78,8 +76,7 @@ private:
             // Save the last odometry message
             last_odom_msg_ = std::make_shared<nav_msgs::msg::Odometry>(odom_msg);
             publisher_->publish(odom_msg);
-
-            RCLCPP_INFO(this->get_logger(), "Published /odom with transformed pose");
+            //RCLCPP_INFO(this->get_logger(), "Published /odom with transformed pose");
         }
         catch (tf2::TransformException &ex)
         {
