@@ -40,13 +40,13 @@ TRAJECTORY_BUILDER_2D.submaps.grid_options_2d.resolution = 0.05
 
 -- Pure Localization 모드 관련 설정
   -- ◆ [1]전역 매칭(루프 클로저) 최소 점수
-POSE_GRAPH.constraint_builder.global_localization_min_score = 0.70
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.64
   -- ◆ [1]로컬 매칭(일반 스캔 매칭) 최소 점수
 POSE_GRAPH.constraint_builder.min_score = 0.742
 
 POSE_GRAPH.global_constraint_search_after_n_seconds = 0
 TRAJECTORY_BUILDER.pure_localization_trimmer = {
-  max_submaps_to_keep = 5,
+  max_submaps_to_keep = 4,
 }
 TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1
 
@@ -55,19 +55,19 @@ TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1
   -- [2]global Fast Correlative 매칭에서 x-y 평면상 탐색 범위 (m), 고정. 작을수록 좋음
 POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.linear_search_window = 0.01
   -- [2]global Fast Correlative 매칭에서 회전(각도) 탐색 범위 (라디안), 고정. 작을수록 좋음
-POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(1.5)
+POSE_GRAPH.constraint_builder.fast_correlative_scan_matcher.angular_search_window = math.rad(1.0)
   -- [1] global 전역 매칭(큰 오프셋 수정 등) 시 스캔을 추출하여 매칭 시도할 확률 (0 ~ 1). 연산량 tradeoff가 존재. 0.0036-0.004 사이. 0.0001 단위로 조절
-POSE_GRAPH.global_sampling_ratio = 0.005 -- 정반대 일 떄
+POSE_GRAPH.global_sampling_ratio = 0.004 -- 정반대 일 떄
 
 -- ◆ [LOCAL]
 -- real time 변수 설정
   -- [2]실시간 Local Correlative 매칭에서 x-y 평면상 탐색 범위 (m)
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.01
 -- [2]실시간 Local Correlative 매칭에서 회전(각도) 탐색 범위 (라디안), 얼마나 허용할 지
-TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.angular_search_window = math.rad(1.5)
+TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.angular_search_window = math.rad(1.0)
 
-TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 200.0
-TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 200.0
+TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 9.0
+TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 10.0
 
 -- LiDAR 관련
 TRAJECTORY_BUILDER_2D.min_range = 0.1
@@ -78,13 +78,13 @@ TRAJECTORY_BUILDER_2D.adaptive_voxel_filter.min_num_points = 200
 TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.05
 
 -- Ceres 기반 Scan Matcher 설정, Lidar 데이터로 이전 서브맵과의 비교를 수행, pose&orientation 파악
-TRAJECTORY_BUILDER_2D.ceres_scan_matcher.occupied_space_weight = 400.0 
-TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 200.0
-TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight = 200.0
+TRAJECTORY_BUILDER_2D.ceres_scan_matcher.occupied_space_weight = 15.0 
+TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 9.0
+TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight = 10.0
 
 --[드리프트 심할 때 키우세요] IMU 설정
   -- 급격한 steering이 있을 경우에는 time_constant와 rotation_weight 증가 고려
-TRAJECTORY_BUILDER_2D.imu_gravity_time_constant = 30.0
+TRAJECTORY_BUILDER_2D.imu_gravity_time_constant = 25.0
 
 MAP_BUILDER.num_background_threads = 4
 
@@ -93,14 +93,14 @@ MAP_BUILDER.num_background_threads = 4
 POSE_GRAPH.optimize_every_n_nodes = 1
 
 -- [대회장 길이에 맞추어 조절] 전역 매칭을 위한 Submap 간 최대 거리
-POSE_GRAPH.constraint_builder.max_constraint_distance = 15.0
+POSE_GRAPH.constraint_builder.max_constraint_distance = 10.0
 
--- [수렴] Loop clousre 관련 변수
-POSE_GRAPH.constraint_builder.loop_closure_translation_weight = 50000.0
-POSE_GRAPH.constraint_builder.loop_closure_rotation_weight = 50000.0
+-- Loop clousre 관련 변수
+POSE_GRAPH.constraint_builder.loop_closure_translation_weight = 50.0
+POSE_GRAPH.constraint_builder.loop_closure_rotation_weight = 50.0
 
-POSE_GRAPH.constraint_builder.sampling_ratio = 0.0001
+
+POSE_GRAPH.constraint_builder.sampling_ratio = 0.8
 
 return options
-
 
