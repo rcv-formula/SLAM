@@ -40,7 +40,7 @@ TRAJECTORY_BUILDER_2D.submaps.grid_options_2d.resolution = 0.05
 
 -- Pure Localization 모드 관련 설정
   -- ◆ [1]전역 매칭(루프 클로저) 최소 점수
-POSE_GRAPH.constraint_builder.global_localization_min_score = 0.655
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.65
   -- ◆ [1]로컬 매칭(일반 스캔 매칭) 최소 점수
 POSE_GRAPH.constraint_builder.min_score = 0.742
 
@@ -66,8 +66,8 @@ TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 
 -- [2]실시간 Local Correlative 매칭에서 회전(각도) 탐색 범위 (라디안), 얼마나 허용할 지
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.angular_search_window = math.rad(1.0)
 
-TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 9.0
-TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 10.0
+TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 15.0
+TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 15.0
 
 -- LiDAR 관련
 TRAJECTORY_BUILDER_2D.min_range = 0.1
@@ -79,7 +79,7 @@ TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.05
 
 -- Ceres 기반 Scan Matcher 설정, Lidar 데이터로 이전 서브맵과의 비교를 수행, pose&orientation 파악
 TRAJECTORY_BUILDER_2D.ceres_scan_matcher.occupied_space_weight = 15.0 
-TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 9.0
+TRAJECTORY_BUILDER_2D.ceres_scan_matcher.translation_weight = 10.0
 TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight = 10.0
 
 --[드리프트 심할 때 키우세요] IMU 설정
@@ -92,7 +92,7 @@ MAP_BUILDER.num_background_threads = 4
   --n개의 노드(스캔)이 쌓일 때마다 전역 최적화(Loop Closure 등) 실행. 적을수록 빠르게 최적화가 일어남. 1개가 적절
 POSE_GRAPH.optimize_every_n_nodes = 1
 
--- [대회장 길이에 맞추어 조절] 전역 매칭을 위한 Submap 간 최대 거리, [m]
+-- [대회장 길이에 맞추어 조절] 전역 매칭을 위한 Submap 간 최대 거리
 POSE_GRAPH.constraint_builder.max_constraint_distance = 10.0
 
 -- Loop clousre 관련 변수
@@ -100,7 +100,7 @@ POSE_GRAPH.constraint_builder.loop_closure_translation_weight = 50.0
 POSE_GRAPH.constraint_builder.loop_closure_rotation_weight = 50.0
 
 
-POSE_GRAPH.constraint_builder.sampling_ratio = 0.8
+POSE_GRAPH.constraint_builder.sampling_ratio = 0.78
 
 return options
 
