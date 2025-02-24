@@ -40,7 +40,7 @@ TRAJECTORY_BUILDER_2D.submaps.grid_options_2d.resolution = 0.05
 
 -- Pure Localization 모드 관련 설정
   -- ◆ [1]전역 매칭(루프 클로저) 최소 점수
-POSE_GRAPH.constraint_builder.global_localization_min_score = 0.64
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.655
   -- ◆ [1]로컬 매칭(일반 스캔 매칭) 최소 점수
 POSE_GRAPH.constraint_builder.min_score = 0.742
 
@@ -92,7 +92,7 @@ MAP_BUILDER.num_background_threads = 4
   --n개의 노드(스캔)이 쌓일 때마다 전역 최적화(Loop Closure 등) 실행. 적을수록 빠르게 최적화가 일어남. 1개가 적절
 POSE_GRAPH.optimize_every_n_nodes = 1
 
--- [대회장 길이에 맞추어 조절] 전역 매칭을 위한 Submap 간 최대 거리
+-- [대회장 길이에 맞추어 조절] 전역 매칭을 위한 Submap 간 최대 거리, [m]
 POSE_GRAPH.constraint_builder.max_constraint_distance = 10.0
 
 -- Loop clousre 관련 변수
