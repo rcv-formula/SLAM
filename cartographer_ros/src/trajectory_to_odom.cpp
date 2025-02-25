@@ -16,19 +16,14 @@ public:
           tf_buffer_(this->get_clock()),
           tf_listener_(tf_buffer_)
     {
-        // Subscriber to /tracked_pose
+        // /tracked_pose 구독자 생성
         subscription_ = this->create_subscription<geometry_msgs::msg::PoseStamped>(
-            "/tracked_pose", 10, std::bind(&TrackedPoseToOdom::callback, this, _1));
+            "/tracked_pose", 20, std::bind(&TrackedPoseToOdom::callback, this, _1));
 
-        // Publisher for /odom
-        publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
+        // /odom 퍼블리셔 생성
+        publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 20);
 
-        // Timer for periodic /odom publishing
-        timer_ = this->create_wall_timer(
-            std::chrono::milliseconds(100),
-            std::bind(&TrackedPoseToOdom::publish_last_odom, this));
-
-        // Parameter for use_sim_time
+        // use_sim_time 파라미터 확인
         if (!this->get_parameter("use_sim_time", use_sim_time_)) {
             RCLCPP_INFO(this->get_logger(), "\033[33muse_sim_time NOT SET. Defaulting to false.\033[0m");
             use_sim_time_ = false;
@@ -42,20 +37,13 @@ private:
     {
         try
         {
-            // Get the transform from map to odom
-            geometry_msgs::msg::TransformStamped map_to_odom = tf_buffer_.lookupTransform(
-                "map", "base_link", tf2::TimePointZero);
+            // map -> base_link 변환 획득
+            auto map_to_odom = tf_buffer_.lookupTransform("map", "base_link", tf2::TimePointZero);
 
-            // Transform the tracked pose from map to odom frame
-            double position_x = map_to_odom.transform.translation.x;
-            double position_y = map_to_odom.transform.translation.y;
-            double orientation_z = map_to_odom.transform.rotation.z;
-            double orientation_w = map_to_odom.transform.rotation.w;
-            
-            // Create Odometry message
+            // Odometry 메시지 생성
             nav_msgs::msg::Odometry odom_msg;
 
-            // Set timestamp based on use_sim_time
+            // 타임스탬프 설정 (use_sim_time에 따라)
             builtin_interfaces::msg::Time current_time;
             current_time.sec = this->get_clock()->now().seconds();
             current_time.nanosec = this->get_clock()->now().nanoseconds() % 1000000000;
@@ -64,19 +52,15 @@ private:
             odom_msg.header.frame_id = "map";
             odom_msg.child_frame_id = "base_link";
 
-            odom_msg.pose.pose.position.x = position_x;
-            odom_msg.pose.pose.position.y = position_y;
+            // transform 데이터를 이용하여 위치 및 자세 설정
+            odom_msg.pose.pose.position.x = map_to_odom.transform.translation.x;
+            odom_msg.pose.pose.position.y = map_to_odom.transform.translation.y;
             odom_msg.pose.pose.position.z = 0.0;
 
-            odom_msg.pose.pose.orientation.x = 0.0;
-            odom_msg.pose.pose.orientation.y = 0.0;
-            odom_msg.pose.pose.orientation.z = orientation_z;
-            odom_msg.pose.pose.orientation.w = orientation_w;
+            odom_msg.pose.pose.orientation = map_to_odom.transform.rotation;
 
-            // Save the last odometry message
-            last_odom_msg_ = std::make_shared<nav_msgs::msg::Odometry>(odom_msg);
+            // 바로 odom 메시지 publish
             publisher_->publish(odom_msg);
-            //RCLCPP_INFO(this->get_logger(), "Published /odom with transformed pose");
         }
         catch (tf2::TransformException &ex)
         {
@@ -84,18 +68,8 @@ private:
         }
     }
 
-    void publish_last_odom()
-    {
-        if (last_odom_msg_)
-        {
-            publisher_->publish(*last_odom_msg_);
-        }
-    }
-
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr subscription_;
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr publisher_;
-    rclcpp::TimerBase::SharedPtr timer_;
-    std::shared_ptr<nav_msgs::msg::Odometry> last_odom_msg_;
 
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
